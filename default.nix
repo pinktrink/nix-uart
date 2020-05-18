@@ -1,6 +1,6 @@
 {
   name,
-  usbDevice,
+  usbDevice ? "/dev/ttyUSB0",
   cfg ? "aarch64-unknown-linux-gnu",
   system ? "aarch64-linux",
   keys ? [],
