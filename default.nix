@@ -6,7 +6,9 @@
   keys ? [],
   headless ? true,
   timeZone ? "Etc/UTC",
+  gpioChip ? "/dev/gpiochip0",
   ppin ? 8,
+  spin ? 9,
   pkgs ? import <nixpkgs> {},
   ...
 }:
@@ -44,8 +46,8 @@ let
     fullImport = gpioImport + ''
       import time
     '';
-    pin = ''
-      pin = GPIO(${toString ppin}, "out")
+    pin = s: ''
+      pin = GPIO("${gpioChip}", ${if s then (toString ppin) else (toString spin)}, "${if s then "out" else "in"}")
     '';
     high = ''
       pin.write(True)
@@ -71,10 +73,15 @@ let
       exit
     '';
 
-    cycle-shell = mkPythonShell "cycle-shell" (fullImport + pin + power + sleep3 + power + close);
-    power-shell = mkPythonShell "power-shell" (gpioImport + pin + power + close);
-    hard-cycle-shell = mkPythonShell "hard-cycle-shell" (fullImport + pin + hardPower + sleep3 + power + close);
-    hard-power-shell = mkPythonShell "hard-poweroff-shell" (fullImport + pin + hardPower + close);
+    cycle-shell = mkPythonShell "cycle-shell" (fullImport + pin true + power + sleep3 + power + close);
+    power-shell = mkPythonShell "power-shell" (gpioImport + pin true + power + close);
+    hard-cycle-shell = mkPythonShell "hard-cycle-shell" (fullImport + pin true + hardPower + sleep3 + power + close);
+    hard-power-shell = mkPythonShell "hard-poweroff-shell" (fullImport + pin true + hardPower + close);
+
+    status-shell = mkPythonShell "status-shell" (gpioImport + pin false + ''
+      state = pin.read()
+      print("on" if state else "off")
+    '' + close);
   };
 in {
   imports = imports';
@@ -121,6 +128,10 @@ in {
       hard-power = {
         description = "Hard power ${name}";
         shell = shells.hard-power-shell;
+      };
+      status = {
+        description = "Status of ${name}";
+        shell = shells.status-shell;
       };
     };
     defaultUserShell = pkgs.bashInteractive_5;
