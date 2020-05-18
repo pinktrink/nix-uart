@@ -83,6 +83,8 @@ in {
 
   time.timeZone = timeZone;
 
+  networking.hostName = "${name}-gateway";
+
   programs.bash = {
     enableCompletion = true;
     promptInit = ''
