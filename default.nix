@@ -16,7 +16,7 @@ let
   inherit (pkgs) writeTextFile writeShellScriptBin;
   inherit (pkgs.lib.attrsets) mapAttrs attrValues;
 
-  imports' = if headless then [] else [ <nixpkgs/nixos/modules/profiles/headless.nix> ];
+  imports' = if headless then [ <nixpkgs/nixos/modules/profiles/headless.nix> ] else [];
   withKeys = u: mapAttrs (_: v: v // { openssh.authorizedKeys.keys = keys; }) ({ root = { }; } // u);
   writePythonScriptBin = name: text: writeTextFile {
     inherit name;
