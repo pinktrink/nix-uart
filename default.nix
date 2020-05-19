@@ -22,13 +22,15 @@ let
   shells = let
     writePythonScriptBin = name: text: writeTextFile {
       inherit name;
+      executable = true;
+      destination = "/bin/${name}";
       text = ''
         #!${pkgs.python3}
         ${text}
       '';
 
       checkPhase = ''
-        ${pkgs.python3}/bin/python -m py_compile $out/${name}
+        ${pkgs.python38Packages.black}/bin/black --check $out/bin/${name}
       '';
     };
 
