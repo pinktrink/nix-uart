@@ -13,13 +13,25 @@
   ...
 }:
 let
-  inherit (pkgs) writeTextFile writeShellScriptBin;
+  inherit (pkgs) writeTextFile;
   inherit (pkgs.lib.attrsets) mapAttrs attrValues;
 
   imports' = if headless then [ <nixpkgs/nixos/modules/profiles/headless.nix> ] else [];
   withKeys = u: mapAttrs (_: v: v // { openssh.authorizedKeys.keys = keys; }) ({ root = { }; } // u);
 
   shells = let
+    writeShellSCScriptBin = name: text: writeTextFile {
+      inherit name;
+      executable = true;
+      destination = "/bin/${name}";
+      text = ''
+        #!${pkgs.stdenv.shell}
+        ${text}
+      '';
+      checkPhase = ''
+        ${pkgs.shellcheck}/bin/shellcheck -s bash $out/bin/${name}
+      '';
+    };
     writePythonScriptBin = name: text: writeTextFile {
       inherit name;
       executable = true;
@@ -34,7 +46,7 @@ let
       '';
     };
 
-    mkShell = name: text: (writeShellScriptBin {
+    mkShell = name: text: (writeShellSCScriptBin {
       inherit name text;
     }).overrideAttrs (_: {
       passthru.shellPath = "/bin/${name}";
