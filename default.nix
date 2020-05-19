@@ -46,14 +46,12 @@ let
       '';
     };
 
-    mkShell = name: text: (writeShellSCScriptBin {
-      inherit name text;
-    }).overrideAttrs (_: {
+    shellOverride = name: _: {
       passthru.shellPath = "/bin/${name}";
-    });
-    mkPythonShell = name: text: (writePythonScriptBin name text).overrideAttrs (_: {
-      passthru.shellPath = "/bin/${name}";
-    });
+    };
+
+    mkShell = name: text: (writeShellSCScriptBin name text).overrideAttrs (shellOverride name);
+    mkPythonShell = name: text: (writePythonScriptBin name text).overrideAttrs (shellOverride name);
 
     gpioImport = ''
       from periphery import GPIO
