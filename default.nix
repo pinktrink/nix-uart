@@ -79,8 +79,7 @@ let
     hard-power-shell = mkPythonShell "hard-poweroff-shell" (fullImport + pin true + hardPower + close);
 
     status-shell = mkPythonShell "status-shell" (gpioImport + pin false + ''
-      state = pin.read()
-      print("on" if state else "off")
+      print("on" if pin.read() else "off")
     '' + close);
   };
 in {
