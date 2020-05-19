@@ -18,19 +18,20 @@ let
 
   imports' = if headless then [ <nixpkgs/nixos/modules/profiles/headless.nix> ] else [];
   withKeys = u: mapAttrs (_: v: v // { openssh.authorizedKeys.keys = keys; }) ({ root = { }; } // u);
-  writePythonScriptBin = name: text: writeTextFile {
-    inherit name;
-    text = ''
-      #!${pkgs.python3}
-      ${text}
-    '';
-
-    checkPhase = ''
-      ${pkgs.python3}/bin/python -m py_compile $out/${name}
-    '';
-  };
 
   shells = let
+    writePythonScriptBin = name: text: writeTextFile {
+      inherit name;
+      text = ''
+        #!${pkgs.python3}
+        ${text}
+      '';
+
+      checkPhase = ''
+        ${pkgs.python3}/bin/python -m py_compile $out/${name}
+      '';
+    };
+
     mkShell = name: text: (writeShellScriptBin {
       inherit name text;
     }).overrideAttrs (_: {
