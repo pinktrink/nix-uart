@@ -98,7 +98,11 @@ in {
     '';
   };
 
-  environment.systemPackages = with pkgs; [ bashInteractive_5 ] ++ attrValues shells;
+  environment.systemPackages = with pkgs; [
+    bashInteractive_5
+  ] ++ (with python38Packages; [
+    python-periphery
+  ]) ++ attrValues shells;
 
   services.openssh = {
     enable = true;
