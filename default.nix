@@ -57,9 +57,11 @@ let
 
     gpioImport = ''
       from periphery import GPIO
+
     '';
     fullImport = gpioImport + ''
       import time
+
     '';
     pin = s: ''
       pin = GPIO("${gpioChip}", ${if s then (toString ppin) else (toString spin)}, "${if s then "out" else "in"}")
