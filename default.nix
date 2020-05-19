@@ -42,7 +42,7 @@ let
       '';
 
       checkPhase = ''
-        ${pkgs.python38Packages.black}/bin/black --check --diff $out/bin/${name}
+        ${pkgs.python38Packages.black}/bin/black --check --diff --quiet $out/bin/${name}
       '';
     };
 
