@@ -54,6 +54,13 @@ let
     mkPythonShell = name: text: (writePythonScriptBin name text).overrideAttrs (shellOverride name);
 
     gpioImport = ''
+      import sys
+
+      sys.path.insert(
+          0,
+          "${pkgs.python38Packages.python-periphery}/lib/python3.7/site-packages",
+      )
+
       from periphery import GPIO
 
     '';
@@ -110,9 +117,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     bashInteractive_5
-  ] ++ (with python38Packages; [
-    python-periphery
-  ]) ++ attrValues shells;
+  ] ++ attrValues shells;
 
   services.openssh = {
     enable = true;
