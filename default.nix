@@ -76,8 +76,7 @@ let
     '';
     hardPower = high + sleep 11 + low;
     close = ''
-      pin.close()
-    '';
+      pin.close()'';
   in {
     uart-shell = mkShell "uart-shell" ''
       ${pkgs.minicom}/bin/minicom -b 115200 -o -D ${usbDevice}
