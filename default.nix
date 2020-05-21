@@ -87,7 +87,7 @@ let
     cycle-shell = mkPythonShell "cycle-shell" (fullImport + pin true + power + sleep 3 + power + close);
     power-shell = mkPythonShell "power-shell" (gpioImport + pin true + power + close);
     hard-cycle-shell = mkPythonShell "hard-cycle-shell" (fullImport + pin true + hardPower + sleep 3 + power + close);
-    hard-power-shell = mkPythonShell "hard-poweroff-shell" (fullImport + pin true + hardPower + close);
+    hard-power-shell = mkPythonShell "hard-power-shell" (fullImport + pin true + hardPower + close);
 
     status-shell = mkPythonShell "status-shell" (gpioImport + pin false + ''
       print("on" if pin.read() else "off")
