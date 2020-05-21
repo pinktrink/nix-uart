@@ -78,7 +78,6 @@ let
     close = ''
       pin.close()
     '';
-    power-text = gpioImport + pin + power + close;
   in {
     uart-shell = writeShellSCScriptBin "uart-shell" ''
       ${pkgs.minicom}/bin/minicom -b 115200 -o -D ${usbDevice}
