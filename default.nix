@@ -79,7 +79,7 @@ let
       pin.close()
     '';
   in {
-    uart-shell = writeShellSCScriptBin "uart-shell" ''
+    uart-shell = mkShell "uart-shell" ''
       ${pkgs.minicom}/bin/minicom -b 115200 -o -D ${usbDevice}
       exit
     '';
