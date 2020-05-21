@@ -1,11 +1,6 @@
 {
-  name,
   usbDevice ? "/dev/ttyUSB0",
-  cfg ? "aarch64-unknown-linux-gnu",
-  system ? "aarch64-linux",
   keys ? [],
-  headless ? true,
-  timeZone ? "Etc/UTC",
   gpioChip ? "/dev/gpiochip0",
   ppin ? 8,
   spin ? 9,
@@ -16,7 +11,6 @@ let
   inherit (pkgs) writeTextFile;
   inherit (pkgs.lib.attrsets) mapAttrs attrValues;
 
-  imports' = if headless then [ <nixpkgs/nixos/modules/profiles/headless.nix> ] else [];
   withKeys = u: mapAttrs (_: v: v // { openssh.authorizedKeys.keys = keys; }) ({ root = { }; } // u);
 
   shells = let
@@ -100,67 +94,22 @@ let
     '' + close);
   };
 in {
-  imports = imports';
-
-  boot.cleanTmpDir = true;
-
-  time.timeZone = timeZone;
-
-  networking.hostName = "${name}-gateway";
-
-  programs.bash = {
-    enableCompletion = true;
-    promptInit = ''
-      export TERM=xterm
-    '';
-  };
-
   environment.systemPackages = with pkgs; [
     bashInteractive_5
   ] ++ attrValues shells;
 
-  services.openssh = {
-    enable = true;
-    passwordAuthentication = false;
-  };
+  services.openssh.enable = true;
 
   users = {
     mutableUsers = false;
     users = withKeys {
-      uart = {
-        description = "${name} UART access";
-        shell = shells.uart-shell;
-      };
-      cycle = {
-        description = "Reboot ${name}";
-        shell = shells.cycle-shell;
-      };
-      power = {
-        description = "Power ${name}";
-        shell = shells.power-shell;
-      };
-      hard-cycle = {
-        description = "Hard reboot ${name}";
-        shell = shells.hard-cycle-shell;
-      };
-      hard-power = {
-        description = "Hard power ${name}";
-        shell = shells.hard-power-shell;
-      };
-      status = {
-        description = "Status of ${name}";
-        shell = shells.status-shell;
-      };
+      uart.shell = shells.uart-shell;
+      cycle.shell = shells.cycle-shell;
+      power.shell = shells.power-shell;
+      hard-cycle.shell = shells.hard-cycle-shell;
+      hard-power.shell = shells.hard-power-shell;
+      status.shell = shells.status-shell;
     };
     defaultUserShell = pkgs.bashInteractive_5;
-  };
-
-  nix.extraOptions = ''
-    trusted-users = [ @wheel ]
-  '';
-
-  nixpkgs.localSystem = {
-    config = cfg;
-    inherit system;
   };
 }
