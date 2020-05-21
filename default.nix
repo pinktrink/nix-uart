@@ -42,7 +42,7 @@ let
       '';
 
       checkPhase = ''
-        ${pkgs.python38Packages.black}/bin/black --check --diff --quiet $out/bin/${name}
+        ${pkgs.python37Packages.black}/bin/black --check --diff --quiet $out/bin/${name}
       '';
     };
 
@@ -58,7 +58,7 @@ let
 
       sys.path.insert(
           0,
-          "${pkgs.python38Packages.python-periphery}/lib/python3.7/site-packages",
+          "${pkgs.python37Packages.python-periphery}/lib/python3.7/site-packages",
       )
 
       from periphery import GPIO
