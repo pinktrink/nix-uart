@@ -37,7 +37,7 @@ let
       executable = true;
       destination = "/bin/${name}";
       text = ''
-        #!${pkgs.python3}
+        #!${pkgs.python3}/bin/python
         ${text}
       '';
 
