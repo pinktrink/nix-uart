@@ -71,13 +71,10 @@ let
       pin.write(False)
     '';
     power = high + low;
-    sleep11 = ''
-      time.sleep(11)
+    sleep = s: ''
+      time.sleep(${toString s})
     '';
-    hardPower = high + sleep11 + low;
-    sleep3 = ''
-      time.sleep(3)
-    '';
+    hardPower = high + sleep 11 + low;
     close = ''
       pin.close()
     '';
@@ -88,9 +85,9 @@ let
       exit
     '';
 
-    cycle-shell = mkPythonShell "cycle-shell" (fullImport + pin true + power + sleep3 + power + close);
+    cycle-shell = mkPythonShell "cycle-shell" (fullImport + pin true + power + sleep 3 + power + close);
     power-shell = mkPythonShell "power-shell" (gpioImport + pin true + power + close);
-    hard-cycle-shell = mkPythonShell "hard-cycle-shell" (fullImport + pin true + hardPower + sleep3 + power + close);
+    hard-cycle-shell = mkPythonShell "hard-cycle-shell" (fullImport + pin true + hardPower + sleep 3 + power + close);
     hard-power-shell = mkPythonShell "hard-poweroff-shell" (fullImport + pin true + hardPower + close);
 
     status-shell = mkPythonShell "status-shell" (gpioImport + pin false + ''
