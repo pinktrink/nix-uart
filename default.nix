@@ -14,6 +14,8 @@ let
   withKeys = u: mapAttrs (_: v: v // { openssh.authorizedKeys.keys = keys; }) ({ root = { }; } // u);
 
   shells = let
+    py3 = pkgs.python3.withPackages (pp: with pp; [ python-periphery ]);
+
     writeShellSCScriptBin = name: text: writeTextFile {
       inherit name;
       executable = true;
@@ -31,7 +33,7 @@ let
       executable = true;
       destination = "/bin/${name}";
       text = ''
-        #!${pkgs.python3}/bin/python
+        #!${py3}/bin/python
         ${text}
       '';
 
@@ -48,13 +50,6 @@ let
     mkPythonShell = name: text: (writePythonScriptBin name text).overrideAttrs (shellOverride name);
 
     gpioImport = ''
-      import sys
-
-      sys.path.insert(
-          0,
-          "${pkgs.python37Packages.python-periphery}/lib/python3.7/site-packages",
-      )
-
       from periphery import GPIO
 
     '';
