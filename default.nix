@@ -10,11 +10,12 @@
 let
   inherit (pkgs) writeTextFile;
   inherit (pkgs.lib.attrsets) mapAttrs attrValues;
+  inherit (pkgs.python3) withPackages;
 
   withKeys = u: mapAttrs (_: v: v // { openssh.authorizedKeys.keys = keys; }) ({ root = { }; } // u);
 
   shells = let
-    py3 = pkgs.python3.withPackages (pp: with pp; [ python-periphery ]);
+    py3 = withPackages (pp: with pp; [ python-periphery ]);
 
     writeShellSCScriptBin = name: text: writeTextFile {
       inherit name;
