@@ -1,14 +1,18 @@
 {
-  usbDevice ? "/dev/ttyUSB0",
+  serialID ? false,
+  usbDevice ? if !serialID then "/dev/ttyUSB0" else "/dev/uart-${serialID}",
   keys ? [],
   gpioChip ? "/dev/gpiochip0",
   ppin ? 8,
   spin ? 9,
+  idVendor ? "0403",
+  idProduct ? "6001",
   pkgs ? import <nixpkgs> {},
   ...
 }:
 let
   inherit (pkgs) writeTextFile;
+  inherit (pkgs.lib) mkIf;
   inherit (pkgs.lib.attrsets) mapAttrs attrValues;
   inherit (pkgs.python3) withPackages;
 
@@ -94,7 +98,18 @@ in {
     bashInteractive_5
   ] ++ attrValues shells;
 
-  services.openssh.enable = true;
+  services = {
+    openssh.enable = true;
+    udev.packages = mkIf serialID [
+      (writeTextFile {
+        name = "uart-rules";
+        destination = "/etc/udev/rules.d/99-uart.rules";
+        text = ''
+          SUBSYSTEM=="tty", ATTRS{idVendor}=="${idVendor}", ATTRS{idProduct}=="${idProduct}", ATTRS{serial}=="${serialID}", SYMLINK+="uart-${serialID}"
+        '';
+      })
+    ];
+  };
 
   users = {
     mutableUsers = false;
