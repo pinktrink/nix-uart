@@ -94,10 +94,6 @@ let
     '' + close);
   };
 in {
-  environment.systemPackages = with pkgs; [
-    bashInteractive_5
-  ] ++ attrValues shells;
-
   services = {
     openssh.enable = true;
     udev.packages = mkIf serialID [
