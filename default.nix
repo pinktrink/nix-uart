@@ -79,17 +79,17 @@ let
     close = ''
       pin.close()'';
   in {
-    uart-shell = mkShell "uart-shell" ''
+    uart = mkShell "uart-shell" ''
       ${pkgs.minicom}/bin/minicom -b 115200 -o -D ${usbDevice}
       exit
     '';
 
-    cycle-shell = mkPythonShell "cycle-shell" (fullImport + pin true + power + sleep 3 + power + close);
-    power-shell = mkPythonShell "power-shell" (gpioImport + pin true + power + close);
-    hard-cycle-shell = mkPythonShell "hard-cycle-shell" (fullImport + pin true + hardPower + sleep 3 + power + close);
-    hard-power-shell = mkPythonShell "hard-power-shell" (fullImport + pin true + hardPower + close);
+    cycle = mkPythonShell "cycle-shell" (fullImport + pin true + power + sleep 3 + power + close);
+    power = mkPythonShell "power-shell" (gpioImport + pin true + power + close);
+    hard-cycle = mkPythonShell "hard-cycle-shell" (fullImport + pin true + hardPower + sleep 3 + power + close);
+    hard-power = mkPythonShell "hard-power-shell" (fullImport + pin true + hardPower + close);
 
-    status-shell = mkPythonShell "status-shell" (gpioImport + pin false + ''
+    status = mkPythonShell "status-shell" (gpioImport + pin false + ''
       print("on" if pin.read() else "off")
     '' + close);
   };
@@ -110,12 +110,12 @@ in {
   users = {
     mutableUsers = false;
     users = withKeys {
-      uart.shell = shells.uart-shell;
-      cycle.shell = shells.cycle-shell;
-      power.shell = shells.power-shell;
-      hard-cycle.shell = shells.hard-cycle-shell;
-      hard-power.shell = shells.hard-power-shell;
-      status.shell = shells.status-shell;
+      uart.shell = shells.uart;
+      cycle.shell = shells.cycle;
+      power.shell = shells.power;
+      hard-cycle.shell = shells.hard-cycle;
+      hard-power.shell = shells.hard-power;
+      status.shell = shells.status;
     };
     defaultUserShell = pkgs.bashInteractive_5;
   };
