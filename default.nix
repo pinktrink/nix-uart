@@ -1,6 +1,8 @@
-{
-  serialID ? false,
-  usbDevice ? if !serialID then "/dev/ttyUSB0" else "/dev/uart-${serialID}",
+let
+  inherit (builtins) stringLength;
+in {
+  serialID ? "",
+  usbDevice ? if stringLength serialID == 0 then "/dev/ttyUSB0" else "/dev/uart-${serialID}",
   keys ? [],
   gpioChip ? "/dev/gpiochip0",
   ppin ? 8,
@@ -96,7 +98,7 @@ let
 in {
   services = {
     openssh.enable = true;
-    udev.packages = mkIf serialID [
+    udev.packages = mkIf (stringLength serialID > 0) [
       (writeTextFile {
         name = "uart-rules";
         destination = "/etc/udev/rules.d/99-uart.rules";
