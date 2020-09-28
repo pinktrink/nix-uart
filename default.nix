@@ -9,9 +9,8 @@ in {
   spin ? 9,
   idVendor ? "0403",
   idProduct ? "6001",
-  pkgs ? import <nixpkgs> {},
-  ...
 }:
+{ pkgs, ... }:
 let
   inherit (pkgs) writeTextFile;
   inherit (pkgs.lib) mkIf;
