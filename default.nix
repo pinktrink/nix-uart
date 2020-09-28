@@ -17,6 +17,7 @@ let
   inherit (pkgs.lib) mkIf;
   inherit (pkgs.lib.attrsets) mapAttrs attrValues;
   inherit (pkgs.python3) withPackages;
+  inherit (builtins) toString;
 
   withKeys = u: mapAttrs (_: v: v // { openssh.authorizedKeys.keys = keys; }) ({ root = { }; } // u);
 
